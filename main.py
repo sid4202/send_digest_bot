@@ -13,15 +13,18 @@ def main():
     # Handle '/start' and '/help'
     @bot.message_handler(commands=['help', 'start'])
     def send_welcome(message):
-        bot.reply_to(message, """\
-    Hi there, I am EchoBot.
-    I am here to echo your kind words back to you. Just say anything nice and I'll say the exact same thing to you!\
-    """)
+        markup = telebot.types.InlineKeyboardMarkup()
+        button = telebot.types.InlineKeyboardButton(text='Начать работу', callback_data='startOperating')
+
+        markup.add(button)
+
+        bot.send_message(chat_id=message.chat.id, text="Welcome to the digest bot", reply_markup=markup)
 
     # Handle all other messages with content_type 'text' (content_types defaults to ['text'])
-    @bot.message_handler(func=lambda message: True)
-    def echo_message(message):
-        bot.reply_to(message, message.text)
+    @bot.callback_query_handler(func=lambda call: True)
+    def handle_callback(callback):
+        if callback.data == "startOperating":
+            bot.send_message(chat_id=callback.message.chat.id, text="Давайте начнем регистрацию")
 
     bot.infinity_polling()
 
