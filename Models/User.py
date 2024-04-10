@@ -21,7 +21,6 @@ class User(Base):
     is_subscriber = Column(BOOLEAN)
     is_company_superuser = Column(BOOLEAN)
     is_employer = Column(BOOLEAN)
-    is_subscriber = Column(BOOLEAN)
     subscription_id = Column(Integer, ForeignKey('subscriptions.id'))
 
     subscription = relationship(Subscription.__name__)
