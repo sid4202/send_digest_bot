@@ -30,7 +30,8 @@ def upgrade() -> None:
         sa.Column('password', sa.String),
         sa.Column('is_subscriber', sa.BOOLEAN),
         sa.Column('is_company_superuser', sa.BOOLEAN),
-        sa.Column('is_employer', sa.BOOLEAN)
+        sa.Column('is_employer', sa.BOOLEAN),
+        sa.Column('subscription_id', sa.Integer)
     )
 
 
