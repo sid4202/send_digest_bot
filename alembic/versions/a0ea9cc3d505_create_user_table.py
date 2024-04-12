@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = 'a0ea9cc3d505'
-down_revision: Union[str, None] = None
+down_revision: Union[str, None] = '56ce902f8b63'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -31,7 +31,7 @@ def upgrade() -> None:
         sa.Column('is_subscriber', sa.BOOLEAN),
         sa.Column('is_company_superuser', sa.BOOLEAN),
         sa.Column('is_employer', sa.BOOLEAN),
-        sa.Column('subscription_id', sa.Integer)
+        sa.Column('subscription_id', sa.Integer, sa.ForeignKey('subscription.id'))
     )
 
 

@@ -20,8 +20,8 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     op.create_table(
         'user_company',
-        sa.Column('user_id', sa.Integer, ),
-        sa.Column('company_id', sa.Integer, )
+        sa.Column('user_id', sa.Integer, sa.ForeignKey('user.id')),
+        sa.Column('company_id', sa.Integer, sa.ForeignKey('company.id'))
     )
 
 
