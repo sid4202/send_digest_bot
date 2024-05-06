@@ -27,5 +27,6 @@ def upgrade() -> None:
         sa.Column('sending_time', sa.TIMESTAMP),
     )
 
+
     def downgrade() -> None:
         op.drop_table('digest_config')

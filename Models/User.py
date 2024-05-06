@@ -17,10 +17,10 @@ class User(Base):
     name = Column(String, nullable=True)
     surname = Column(String, nullable=True)
     job_name = Column(String, nullable=True)
-    password = Column(String)
+    password = Column(String, nullable=True)
     is_subscriber = Column(BOOLEAN)
     is_company_superuser = Column(BOOLEAN)
     is_employer = Column(BOOLEAN)
-    subscription_id = Column(Integer, ForeignKey('subscriptions.id'))
+    subscription_id = Column(Integer, ForeignKey('subscriptions.id'), nullable=True)
 
     subscription = relationship(Subscription.__name__)
