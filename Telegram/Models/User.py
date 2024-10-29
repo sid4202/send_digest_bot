@@ -5,8 +5,9 @@ from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import relationship
-import Subscription
-import Base
+from sqlalchemy import insert
+from Models import Subscription
+from Models import Base
 
 
 class User(Base):
@@ -24,3 +25,6 @@ class User(Base):
     subscription_id = Column(Integer, ForeignKey('subscriptions.id'), nullable=True)
 
     subscription = relationship(Subscription.__name__)
+    def create_subscription(self):
+        stmt = insert(Subscription)
+        data = {'': callback_data['username']}

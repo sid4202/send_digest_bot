@@ -1,8 +1,7 @@
 from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import ForeignKey
-import Base
-
+from Models import Base
 class UserCompany(Base):
     __tablename__ = 'user_company'
 

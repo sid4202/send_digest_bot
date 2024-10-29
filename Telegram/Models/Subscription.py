@@ -5,8 +5,7 @@ from sqlalchemy import TIMESTAMP
 from sqlalchemy import BOOLEAN
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-import Base
-import DigestConfig
+from Models import Base, DigestConfig
 
 
 class Subscription(Base):

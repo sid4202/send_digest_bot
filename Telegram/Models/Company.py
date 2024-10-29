@@ -5,8 +5,7 @@ from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import relationship
-import Subscription
-import Base
+from Models import Base, Subscription
 
 
 class Company(Base):
