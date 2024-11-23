@@ -6,6 +6,7 @@ use App\Parser;
 use PHPHtmlParser\Dom;
 use Illuminate\Support\Facades\Cache;
 use PHPHtmlParser\Options;
+use App\Models\Article;
 
 
 
@@ -23,7 +24,6 @@ class RbkParser extends Parser
     {
         $this->searchQueries = [
             'rbk_realty' => 'https://realty.rbc.ru/?utm_source=topline',
-            'rbk_invest' => 'https://www.rbc.ru/quote'
         ];
     }
     
@@ -58,7 +58,7 @@ class RbkParser extends Parser
         }
         
     }
-    protected function getArticleTextsAndTitles(): array
+    protected function getArticleTextsAndTitles(): void
     {  
         $links = json_decode(Cache::get($this->cacheKey), true);
 
@@ -69,11 +69,16 @@ class RbkParser extends Parser
             var_dump($link);
 
             sleep(rand(5, 10));
-            $articles[] = $this->parseArticle($link);
-            var_dump($articles);
-        }
+            $article = $this->parseArticle($link);
 
-        return $articles;
+            var_dump($article);
+
+            Article::query()->create([
+                'text' => $article['text'],
+                'source' => $article['source'],
+                'title' => $article['title']
+            ]);
+        }
     }
     protected function parseArticle(string $url): array
     {  
@@ -87,14 +92,15 @@ class RbkParser extends Parser
         $article = [
             'text' => $text,
             'title' => $title,
-            'url' => $url
+            'source' => $url
         ];
 
         return $article;
     }
-    public function getArticles(): array
+    public function getArticles(): void
     {
         $this->getLinks();
-        return $this->getArticleTextsAndTitles();
+
+        $this->getArticleTextsAndTitles();
     }
 }

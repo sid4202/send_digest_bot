@@ -5,24 +5,27 @@ namespace App\Services;
 use App\Parser;
 use PHPHtmlParser\Dom;
 use Illuminate\Support\Facades\Cache;
+use PHPHtmlParser\Options;
 use App\Models\Article;
 
 
-class RiaParser extends Parser
+
+
+class PrimeParser extends Parser
 {
     private string $cacheKey;
     private array $searchQueries;
 
     protected function setCacheKey(): void
     {
-        $this->cacheKey = 'ria';
+        $this->cacheKey = 'prime';
     }
 
     protected function setSearchQueries(): void
     {
-        $this->searchQueries = config('app.search_query.ria');
+        $this->searchQueries = config('app.search_query.prime');
+
     }
-    
     protected function getLinks(): void 
     {
         $this->setCacheKey();
@@ -30,18 +33,19 @@ class RiaParser extends Parser
         $linksToSave = [];
 
         foreach ($this->searchQueries as $query) {
-            $html = file_get_contents('https://ria.ru/search/?query='.toAsciiHex($query));
+            $html = file_get_contents(filename: 'https://1prime.ru/search/?query='.toAsciiHex($query));
 
             $dom = new Dom();
             $dom->loadStr($html);
-    
-            $links = $dom->find("a.list-item__image");
-            $linksList[] = $links[0]->href;
-    
-            /*foreach($links as $link)
-            {
-              $linksList[] = $link->href;
-            }*/
+
+            $linksList = [];
+
+            $a = $dom->find('a');
+            foreach($a as $link) {
+                if ($link->class == 'list-item__title color-font-hover-only') {
+                    $linksList[] = 'https://1prime.ru'.$link->href;
+                }
+            }
 
             $linksToSave[$query] = $linksList;
             sleep(rand(5, 10));
@@ -56,8 +60,10 @@ class RiaParser extends Parser
         }
         
     }
+
     protected function getArticleTextsAndTitles(): void
     {  
+        echo "PARSING STARTS"."\n"; 
         $links = json_decode(Cache::get($this->cacheKey), true);
 
         $dom = new Dom();
@@ -69,44 +75,40 @@ class RiaParser extends Parser
 
                 sleep(rand(5, 10));
                 $article = $this->parseArticle($link);
-                var_dump(mb_convert_encoding(explode("\n", $article['text'])[0], 'utf-8'));
-
                 Article::query()->create([
-                    'text' => explode("\n", $article['text'])[0],
+                    'text' => $article['text'],
                     'source' => $article['source'],
                     'title' => $article['title']
                 ]);
             }
         }
     }
+
     protected function parseArticle(string $url): array
-    {  
-        $dom = new Dom();
+        {  
+            echo "PARSING ARTICLE"."\n"; 
+            $dom = new Dom();
 
-        try {
             $html = file_get_contents($url);
-        } catch (NotFoundHttpException) {
-            echo "Page not found"."\n";
-            return [];
-        }
-        
-        $dom->loadStr($html);
-        
-        $divs = $dom->find('div.article__text');
-        $title = $dom->find('title')[0]->text;
-        $text = "";
-        
-        foreach ($divs as $div) {
-            $text .= $div->text."\n";
-        }
-        
-        $article = [
-                'title' => $title,
-                'text' => $text,
-                'source' => $url,
-        ];
+            
+            $dom->loadStr($html);
 
-        return $article;
+            $title = $dom->find('title')[0]->text();
+            $div = $dom->find('div');
+            $articleText = '';
+                
+            foreach ($div as $block) {
+                if ($block->class == 'article__text ') {
+                    $articleText .= $block->text."\n";
+                }
+            }
+            $article = [
+                    'source' => $url,
+                    'text' => $articleText,
+                    'title' => $title
+            ];
+            var_dump($article);
+            return $article;
     }
     public function getArticles(): void
     {
